@@ -530,16 +530,17 @@ Science, Biological and Environmental Research, Earth and Environmental
 System Modeling, Regional and Global Model Analysis (RGMA) program area,
 through the project "Coupled Land-Atmosphere-Ocean Data Assimilation for E3SM
 with DART for Understanding Subseasonal-to-Seasonal Predictability of Extreme
-Events." The participating institutions and their respective PIs are
-Pacific Northwest National Laboratory (PNNL; PI: Shixuan Zhang),
-the University of Utah (PI: Zhaoxia Pu), and the NSF National Center
-for Atmospheric Research (NCAR; PI: Jeffrey Anderson):
+Events," involving Pacific Northwest National Laboratory (PNNL; PI: Shixuan
+Zhang), the University of Utah (PI: Zhaoxia Pu), and the NSF National Center
+for Atmospheric Research (NCAR; PI: Jeffrey Anderson).
+Project details are available at:
 https://eesm.science.energy.gov/projects/coupled-land-atmosphere-ocean-data-assimilation-e3sm-dart-understanding-subseasonal
 
 The E3SM–DART integration and associated computational workflows were
 developed through collaborative efforts involving PNNL and NSF NCAR,
-building upon the existing E3SM and DART software systems. The repository development also benefited from the DART-as-a-submodule
-example available at: https://github.com/hkershaw-brown/example_dart_as_submodule
+building upon the existing E3SM and DART software systems. The repository
+organization also benefited from the DART-as-a-submodule example available at
+https://github.com/hkershaw-brown/example_dart_as_submodule.
 
 DART and E3SM retain their respective licenses and attribution requirements.
 Preserve applicable license and copyright notices when incorporating source
