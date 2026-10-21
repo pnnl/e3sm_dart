@@ -542,6 +542,14 @@ building upon the existing E3SM and DART software systems. The repository
 organization also benefited from the DART-as-a-submodule example available at
 https://github.com/hkershaw-brown/example_dart_as_submodule.
 
+## License and disclaimer
+
+Copyright Battelle Memorial Institute 2026. This software is released under
+the BSD-style license in [LICENSE](LICENSE); see also
+[DISCLAIMER.md](DISCLAIMER.md). Developed at Pacific Northwest National
+Laboratory, operated by Battelle for the U.S. Department of Energy under
+Contract DE-AC05-76RL01830.
+
 DART and E3SM retain their respective licenses and attribution requirements.
 Preserve applicable license and copyright notices when incorporating source
 files into this repository.
