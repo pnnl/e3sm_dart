@@ -93,6 +93,8 @@ export my_eam_se_mapping_file="${my_repository_root}/models/homme/SEMapping.nc"
 export my_eam_cs_grid_file="${my_repository_root}/models/eam-se/${my_dart_build_dir_name}/SEMapping_cs_grid_NE30.nc"
 export my_eam_post_map_file="/global/cfs/cdirs/m4849/zhan391/reference/regrid_maps/map_ne30pg2_to_cmip6_180x360_aave.20200201.nc"
 export my_elm_post_map_file="/global/cfs/cdirs/m4849/zhan391/reference/regrid_maps/map_r05_to_cmip6_180x360_aave.20200901.nc"
+# ne30np4 (DART state grid) to 1 deg, for the Step 9 DART pressure-level products
+export my_eam_dart_post_map_file="/global/cfs/cdirs/m4849/zhan391/reference/regrid_maps/map_ne30np4_to_cmip6_180x360_aave.c231227.nc"
 export my_amip_sst_data="/global/cfs/cdirs/m4849/zhan391/DART_INIT/SST_forcing/sst_ice_NOAA_AVHRR_E3SM_1x1_c20231225.nc"
 export my_amip_sst_grid="/global/cfs/cdirs/m4849/zhan391/DART_INIT/SST_forcing/domain.ocn.1x1.111007.nc"
 

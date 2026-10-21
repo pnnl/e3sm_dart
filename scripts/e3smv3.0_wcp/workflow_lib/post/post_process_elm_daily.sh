@@ -99,7 +99,7 @@ for year in $(seq "${sy}" "${ey}"); do
       if (( year == sy && month == sm && dd < 10#${ymds:8:2} )); then continue; fi
       if (( year == ey && month == em && dd > 10#${ymde:8:2} )); then continue; fi
       dd2=$(printf "%02d" "${dd}")
-      day_glob="${input}/${CASE_NAME}.${hist}.${yymm}-${dd2}"*.nc
+      day_glob="${input}/${CASE_NAME}.${hist}.${yymm}-${dd2}"-?????.nc
       day_files=( ${day_glob} )
 
       # no files for this day → skip

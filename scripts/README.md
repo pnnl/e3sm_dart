@@ -16,7 +16,9 @@ Choose the workflow matching the components to be assimilated, then read its
 README and review every setting in `create_and_setup_case.sh` before submitting
 jobs. The E3SM maint-3.0 workflows use numbered entry-point scripts: Steps 1–4
 perform ensemble setup, initial-condition preparation, perturbation, and cycling;
-Steps 5–8 provide optional compression, diagnostics, and post-processing.
+Steps 5–9 provide optional compression, diagnostics, and post-processing
+(Step 9 builds 6-hourly, daily and monthly products from the 6-hourly history
+and DART output).
 
 Run scripts only with the configuration and `workflow_lib/` files from the same
 workflow directory. The coupled `e3smv3.0_wcp` and `e3smv3.0_scp` workflows additionally require a

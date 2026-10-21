@@ -82,6 +82,7 @@ each assimilation cycle can select and validate one exact-time record.
    sbatch 6_run_dart_diag.sh
    sbatch 7_run_post_hist.sh
    sbatch 8_run_post_init.sh
+   sbatch 9_run_post_6hourly.sh
    ```
 
 Use timestamps in `YYYY-MM-DD-SSSSS` form, where `SSSSS` is seconds since midnight. For example, midnight is `00000` and 18 UTC is `64800`.
@@ -104,7 +105,7 @@ Do not bypass a failed stage by manually creating completion records. Downstream
         └── 8. EAM/ELM restart-variable extraction
 ```
 
-Steps 1–4 form the core cycling workflow. Steps 5–8 are post-cycle utilities and may be run when their required upstream cycle records and data are available.
+Steps 1–4 form the core cycling workflow. Steps 5–9 are post-cycle utilities and may be run when their required upstream cycle records and data are available.
 
 ## Directory structure
 
@@ -118,6 +119,7 @@ Steps 1–4 form the core cycling workflow. Steps 5–8 are post-cycle utilities
 ├── 6_run_dart_diag.sh
 ├── 7_run_post_hist.sh
 ├── 8_run_post_init.sh
+├── 9_run_post_6hourly.sh
 ├── create_and_setup_case.sh
 ├── workflow_lib/
 │   ├── common/         # Shared file commands (MOVE, COPY, LINK, REMOVE) sourced by every stage
@@ -127,6 +129,7 @@ Steps 1–4 form the core cycling workflow. Steps 5–8 are post-cycle utilities
 │   ├── namelists/      # Authoritative DART runtime namelist templates
 │   ├── maintenance/    # Safe runtime cleanup utility
 │   ├── post/           # Step 7 workers
+│   ├── post6h/         # Step 9 workers
 │   └── run_template/   # Maintained E3SM run-script templates
 ├── runtmp/
 │   ├── handoff/        # Transaction recovery snapshots
@@ -374,6 +377,62 @@ sbatch 8_run_post_init.sh
 Step 8 operates on midnight restart files. It preflights every requested date and member before writing output, extracts the configured EAM and ELM variables, validates results, and moves them into place atomically.
 
 Keep `REQUIRE_UPSTREAM_MARKERS=TRUE` for normal operation. Set it to `FALSE` only when deliberately processing a legacy restart archive whose files have been independently validated but whose old completion markers were not retained.
+
+### Step 9 — 6-hourly post-processing
+
+Each DA cycle is a separate 6-hour model run, so a history average longer
+than one cycle is not valid: a daily (`nhtfrq=-24`) or monthly (`nhtfrq=0`)
+stream only ever holds the last cycle. The run templates therefore write every
+history stream every 6 hours, and Step 9 builds all products from one record
+per cycle.
+
+Edit the settings at the top of `9_run_post_6hourly.sh`:
+
+| Setting | Meaning |
+| --- | --- |
+| `POST_START`, `POST_END` | First and last day to process (`YYYY-MM-DD`, inclusive); monthly products are written only for months the period covers completely |
+| `HIST_STREAMS` | `component:stream[:rule]`; `mean6h` (default) uses the record whose time bounds span one cycle, `instant` the record valid at the cycle start |
+| `RUN_DART_STATE` | Also build DART ensemble mean/spread products (`TRUE`/`FALSE`) |
+| `MAX_CONCURRENT_WORKERS` | Parallel member/stream workers |
+| `OVERWRITE_EXISTING` | Rebuild products that already have a completion record |
+
+```bash
+sbatch 9_run_post_6hourly.sh
+```
+
+Products, all on the 1° grid:
+
+- History, per member:
+  `${my_modeldir}/ENxx/archive/post6h/<atm|lnd|rof>/180x360_aave/{6hourly,daily,monthly}/VAR.ENxx.YYYY-MM.nc`
+- DART forecast (prior) and analysis (posterior) ensemble mean and spread of
+  T, U, V, Q, CLDLIQ, CLDICE and PS, on 17 pressure levels from 1000 to 10 hPa
+  (below ground set to missing; a 1° cell less than half above ground is
+  missing), regridded with `my_eam_dart_post_map_file`:
+  `${my_dart_root}/post6h/180x360_plev/{6hourly,daily,monthly}/VAR.<forecast|analysis>_<mean|sd>.YYYY-MM.nc`
+
+6-hour means are stamped at the middle of their window; instantaneous and
+min/max fields at the window end. Daily values are the mean (or min/max) of the
+day's cycles, grouped by cycle start; monthly values are the mean of all
+cycles in the month (for min/max fields, the mean of the daily extremes). Instantaneous fields and `instant` streams therefore give means of
+samples, not time integrals. The spread is interpolated in the vertical with
+the ensemble-mean surface pressure, which is an approximation.
+
+Step 9 stops rather than skipping data: the preflight requires every cycle file
+of every requested stream and member; a stream whose records do not span one
+cycle (for example a leftover daily or monthly stream) is rejected; the period
+must contain all of its cycles; and every member must produce the same field
+list. A completion record stores its day range, so extending a partial month
+reprocesses that month rather than skipping it. Completion records are written to
+`runtmp/status/post6h_complete.<stream>.<member>.<YYYY-MM>` and
+`runtmp/status/post6h_complete.dart_<forecast|analysis>.<YYYY-MM>`.
+Steps 7 and 8 remain for runs created before the history streams were moved to
+6-hourly output.
+
+In this coupled workflow, ELM `h1` and `h2` are the ELM-DART forecast inputs
+(`my_elm_history_stream`, `my_elm_vector_history_stream`) and stay
+instantaneous at the analysis time. Step 9 reads `h1` with the `instant` rule
+and does not process the 1-D vector stream `h2`; 6-hour land averages are in
+ELM `h0`.
 
 ## Dependencies and submission practice
 

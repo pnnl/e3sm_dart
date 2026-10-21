@@ -76,7 +76,7 @@ for year in $(seq "${sy}" "${ey}"); do
     yymm=$(printf "%04d-%02d" "${year}" "${month}")
 
     # Link files like ${CASE_NAME}.${hist}.YYYY-MM*.nc
-    for ff in ${input}/${CASE_NAME}.${hist}.${yymm}*.nc; do
+    for ff in ${input}/${CASE_NAME}.${hist}.${yymm}-??-?????.nc; do
       stamp=${ff##*.${hist}.}
       stamp=${stamp%.nc}
       file_date=${stamp:0:10}
@@ -86,7 +86,7 @@ for year in $(seq "${sy}" "${ey}"); do
   done
 done
 
-ls ${CASE_NAME}.${hist}.*.nc > ${flist}
+ls ${CASE_NAME}.${hist}.????-??-??-?????.nc > ${flist}
 
 # === Step 3: Regrid var2_list from hist (6-hourly) ===
 ts_dest1="${outdir}/atm/180x360_aave/ts/${freq}_da"

@@ -103,7 +103,7 @@ for year in $(seq "${sy}" "${ey}"); do
       dd2=$(printf "%02d" "${dd}")
 
       # Gather that day's input files directly from $input; no symlinks
-      day_glob="${input}/${CASE_NAME}.${hist}.${yymm}-${dd2}"*.nc
+      day_glob="${input}/${CASE_NAME}.${hist}.${yymm}-${dd2}"-?????.nc
       day_files=( ${day_glob} )
 
       if ((${#day_files[@]} == 0)); then
