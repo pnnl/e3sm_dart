@@ -5,7 +5,7 @@
 #SBATCH --job-name=e3sm_dart_diag
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=24
-#SBATCH --output=e3sm_dart_diag.%j
+#SBATCH --output=runtmp/logs/e3sm_dart_diag.%j
 #SBATCH --exclusive
 #SBATCH --no-kill
 #SBATCH --requeue

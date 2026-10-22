@@ -68,7 +68,8 @@ each assimilation cycle can select and validate one exact-time record.
 ## Quick start
 
 1. Edit `create_and_setup_case.sh` and verify the machine, project, ensemble, model, reference restart, DART, and date settings.
-   Create the Slurm log directory before the first submission if it does not already exist: `mkdir -p runtmp/logs`.
+   All stages write their Slurm logs to `runtmp/logs/`, which ships with the repository; if it was
+   removed, recreate it with `mkdir -p runtmp/logs` before submitting, or Slurm cannot start the job.
 2. Confirm the required E3SM/DART code, input data, observations, map files, and reference restarts exist.
 3. Submit Steps 1–4 in order, waiting for each stage to complete successfully:
 

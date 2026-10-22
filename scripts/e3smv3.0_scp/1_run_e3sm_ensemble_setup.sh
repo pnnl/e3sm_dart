@@ -4,7 +4,7 @@
 #------------------------------------------------------------------------------
 #SBATCH  --job-name=e3sm_dart_ensda_setup
 #SBATCH  --nodes=1
-#SBATCH  --output=e3sm_dart_ensda_setup.%j
+#SBATCH  --output=runtmp/logs/e3sm_dart_ensda_setup.%j
 #SBATCH  --exclusive
 #SBATCH  --account=m4849
 #SBATCH  --time=02:00:00

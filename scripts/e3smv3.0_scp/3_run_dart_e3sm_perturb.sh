@@ -8,7 +8,7 @@
 #SBATCH  --qos=debug
 #SBATCH  --job-name=e3sm_dart_ensda_pert
 #SBATCH  --nodes=4
-#SBATCH  --output=e3sm_dart_ensda_pert.%j
+#SBATCH  --output=runtmp/logs/e3sm_dart_ensda_pert.%j
 
 fail() {
    echo "ERROR: $*"
@@ -931,7 +931,7 @@ stages_all=`echo $stages_all | sed -e "s#"}"##g"`
 stages_all=`echo $stages_all | sed -e "s#"{"##g"`
 stages_all=(`echo $stages_all | sed -e "s#\,# #g"`)
 for stage in ${stages_all[@]}; do
-  for FILE in `${LIST} ${stage}_member_*.nc` ; do
+  for FILE in `${LIST} ${stage}_member_*.nc 2>/dev/null` ; do
     parts=( `echo $FILE | sed -e "s#\.# #g"` )
     list=( `echo ${parts[0]}  | sed -e "s#_# #g"` )
     last=`expr ${#list[@]} - 2`
@@ -960,7 +960,7 @@ done
 
 # Means and standard deviation files (except for inflation).
 for stage in ${stages_all[@]}; do
-  for FILE in `${LIST} ${stage}_{mean,sd}*.nc`; do
+  for FILE in `${LIST} ${stage}_{mean,sd}*.nc 2>/dev/null`; do
      parts=( `echo $FILE | sed -e "s#\.# #g"` )
      list=( `echo ${parts[0]}  | sed -e "s#_# #g"` )
      #last=`expr ${#list[@]} - 2`
@@ -988,7 +988,7 @@ ${MOVE} dart_log.out  ${scomp}_dart_log.${ATM_DATE_EXT}.out || exit 33
 # The .${scomp}_ part is needed by DART to distinguish
 # between inflation files from separate components in coupled assims.
 for stage in ${stages_all[@]}; do
-  for FILE in `${LIST} ${stage}_{prior,post}inf_*`; do
+  for FILE in `${LIST} ${stage}_{prior,post}inf_* 2>/dev/null`; do
    parts=( `echo $FILE | sed -e "s#\.# #g"` )
    ${MOVE} $FILE  ${DART_CASE}.dart.rh.${scomp}_${parts[0]}.${ATM_DATE_EXT}.nc || exit 34
   done

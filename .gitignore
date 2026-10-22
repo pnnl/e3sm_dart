@@ -14,7 +14,12 @@ _site/
 
 # Local workflow settings and generated runtime state
 config/local.sh
-scripts/*/runtmp/
+# runtmp/ is generated, except an empty runtmp/logs/ so Slurm can write the
+# job logs of a fresh clone (#SBATCH --output=runtmp/logs/...).
+scripts/*/runtmp/*
+!scripts/*/runtmp/logs/
+scripts/*/runtmp/logs/*
+!scripts/*/runtmp/logs/.gitkeep
 .cppdefs
 
 # ROMS_rutgers compile time selection

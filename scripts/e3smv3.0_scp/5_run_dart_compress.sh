@@ -4,7 +4,7 @@
 #SBATCH --partition=slurm
 #SBATCH --job-name=e3sm_compress_range
 #SBATCH --nodes=1
-#SBATCH --output=e3sm_compress_range.%j
+#SBATCH --output=runtmp/logs/e3sm_compress_range.%j
 #SBATCH --exclusive
 #SBATCH --no-kill
 #SBATCH --requeue

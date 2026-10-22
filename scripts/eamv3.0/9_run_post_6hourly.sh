@@ -4,7 +4,7 @@
 #SBATCH --partition=slurm
 #SBATCH --job-name=e3sm_dart_post6h
 #SBATCH --nodes=1
-#SBATCH --output=e3sm_dart_post6h.%j
+#SBATCH --output=runtmp/logs/e3sm_dart_post6h.%j
 #SBATCH --exclusive
 #SBATCH --no-kill
 #SBATCH --requeue
