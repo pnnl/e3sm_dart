@@ -302,13 +302,9 @@ EOF
 }
 
 user_mpassi_nl() {
-  local ymd="$1"
-  local hour="$2"
-  local ref_time="$3"
   local file="user_nl_mpassi"
 
   ex "$file" <<EOF
-g/^ *config_start_time *=/s@=.*@= '${ymd}_${hour}'@
 g/^ *config_calendar_type *=/s@=.*@= 'gregorian'@
 g/^ *config_initial_condition_type *=/s@=.*@= 'restart'@
 g/^ *config_do_restart *=/s@=.*@= .true.@
@@ -318,13 +314,10 @@ EOF
 }
 
 user_mpaso_nl() {
-  local ymd="$1"
-  local hour="$2"
-  local ref_time="$3"
+  local ref_time="$1"
   local file="user_nl_mpaso"
 
   ex "$file" <<EOF
-g/^ *config_start_time *=/s@=.*@= '${ymd}_${hour}'@
 g/^ *config_calendar_type *=/s@=.*@= 'gregorian'@
 g/^ *config_do_restart *=/s@=.*@= .true.@
 g/^ *config_output_reference_time *=/s@=.*@= '${ref_time}'@
@@ -696,9 +689,9 @@ prepare_member() (
     user_elm_nl "${lnd_in}" .false. .false. .true. .true.
   fi
   user_mosart_nl "${rof_in}"
-  user_mpassi_nl "${OCN_DATE}" "${OCN_HOUR}" "${OCN_TIME}"
+  user_mpassi_nl
   if [[ "${my_runtype}" == "Full-CPL" ]]; then
-    user_mpaso_nl "${OCN_DATE}" "${OCN_HOUR}" "${OCN_TIME}"
+    user_mpaso_nl "${OCN_TIME}"
   fi
 
   ./case.setup

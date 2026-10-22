@@ -90,14 +90,10 @@ for submodule in DART E3SM; do
   fi
 done
 
-for submodule in DART E3SM; do
-  if ! (
-    cd "${submodule}" || exit 1
-    [[ -z "$(git status --porcelain)" ]]
-  ); then
-    fail "${submodule} contains local changes; save or discard them first"
-  fi
-done
+[[ -z "$(git -C DART status --porcelain)" ]] || \
+  fail "DART contains local changes; save or discard them first"
+[[ -z "$(e3sm_unexpected_changes "${repository_root}")" ]] || \
+  fail "E3SM contains local changes; save or discard them first"
 
 if [[ "${fetch}" == true ]]; then
 
@@ -197,6 +193,16 @@ rollback() {
   exit "${exit_code}"
 }
 trap rollback ERR INT TERM
+
+# The MPAS driver fixes installed by a workflow build belong to the current
+# E3SM commit. Restore the originals before moving to another commit; the
+# next workflow build installs the fixes again if they match that commit.
+if [[ "${original_e3sm_sha}" != "${E3SM_SHA}" ]]; then
+  while IFS= read -r fixed_driver; do
+    git -C E3SM checkout -- "${fixed_driver}"
+    printf 'Restored original E3SM file (the next build reinstalls the fix): %s\n' "${fixed_driver}"
+  done < <(e3sm_installed_driver_fixes "${repository_root}")
+fi
 
 checkout_started=true
 

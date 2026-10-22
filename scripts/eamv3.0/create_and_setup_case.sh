@@ -75,6 +75,8 @@ export my_cycle_shutdown_margin_sec=600
 # my_runtype must be Full-CPL or AMIP; keep compset and reference files consistent.
 ################################################################################
 export my_e3sm_code="${my_repository_root}/E3SM"
+# E3SM source overrides (SourceMods) for DA cases; see the README there
+export my_e3sm_sourcemods_dir="${my_repository_root}/models/e3sm_sourcemods/e3sm_maint_3.0"
 export my_runtype="Full-CPL"
 export my_compset="WCYCL20TR"
 export my_resolution="ne30pg2_r05_IcoswISC30E3r5"

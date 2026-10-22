@@ -96,3 +96,35 @@ submodule_recorded_sha() {
     git ls-tree HEAD -- "${submodule}"
   ) | awk '{print $3}'
 }
+
+# The workflow build copies the MPAS driver fixes listed in
+# models/e3sm_sourcemods/*/MPAS_DRIVERS into the E3SM checkout (E3SM's MPAS
+# build ignores Fortran SourceMods). These are the only local E3SM changes the
+# version tools accept, and only while each file is identical to its fix.
+e3sm_installed_driver_fixes() {
+  local repository_root=$1
+  local manifest src dst base
+  for manifest in "${repository_root}"/models/e3sm_sourcemods/*/MPAS_DRIVERS; do
+    [[ -r "${manifest}" ]] || continue
+    while read -r src dst base; do
+      [[ -z "${src}" || "${src}" == \#* ]] && continue
+      if cmp -s "$(dirname -- "${manifest}")/${src}" "${repository_root}/E3SM/${dst}"; then
+        printf '%s\n' "${dst}"
+      fi
+    done < "${manifest}"
+  done
+}
+
+# Print E3SM `git status --porcelain` entries other than installed driver fixes.
+e3sm_unexpected_changes() {
+  local repository_root=$1
+  local line
+  local -A fixed=()
+  while IFS= read -r line; do
+    fixed[${line}]=1
+  done < <(e3sm_installed_driver_fixes "${repository_root}")
+  while IFS= read -r line; do
+    [[ "${line:0:2}" == " M" && -n "${fixed[${line:3}]:-}" ]] && continue
+    printf '%s\n' "${line}"
+  done < <(git -C "${repository_root}/E3SM" status --porcelain)
+}

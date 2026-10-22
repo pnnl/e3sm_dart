@@ -1,0 +1,5 @@
+# MPAS driver fixes copied into the E3SM source tree before the build
+# (E3SM's MPAS build ignores Fortran SourceMods; see README.txt).
+# <file here>  <E3SM path it replaces>  <git blob id of the original it was made from>
+src.mpassi/ice_comp_mct.F  components/mpas-seaice/driver/ice_comp_mct.F  3c579aee77af7b73324158ec31500518053931ff
+src.mpaso/ocn_comp_mct.F   components/mpas-ocean/driver/ocn_comp_mct.F   f13e2c2e5c70d4b989fff98446ad24085c2f3a69

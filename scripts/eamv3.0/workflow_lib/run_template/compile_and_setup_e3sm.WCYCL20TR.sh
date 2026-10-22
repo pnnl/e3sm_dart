@@ -39,7 +39,6 @@ readonly DEBUG_COMPILE=false
 readonly MODEL_START_TYPE="hybrid"
 readonly START_DATE=my_casedate
 readonly START_TOD=my_casetod
-readonly START_HOUR=`echo "${START_TOD}" / 3600 | bc`
 
 # Additional options for 'branch' and 'hybrid'
 readonly GET_REFCASE=FALSE
@@ -72,6 +71,7 @@ readonly lnd_surdat="surfdata_0.5x0.5_simyr1850_c200609_with_TOP.nc"
 
 # Set paths
 readonly CODE_ROOT=my_e3sm_code
+readonly E3SM_SOURCEMODS_DIR="${my_e3sm_sourcemods_dir:?my_e3sm_sourcemods_dir is not set}"
 readonly CASE_ROOT=my_case_root
 readonly CASE_BUILD_DIR=my_case_build
 readonly CASE_RUN_DIR=my_case_run
@@ -260,7 +260,6 @@ EOF
 cat << EOF >> user_nl_mpassi
  config_calendar_type = 'gregorian'
  config_initial_condition_type = 'restart'
- config_start_time = '${START_DATE}_${START_HOUR}'
  config_do_restart = .true.
  config_do_restart_bgc = .true.
  config_do_restart_hbrine = .true.
@@ -275,7 +274,6 @@ cat << EOF >> user_nl_mpaso
  config_do_restart = .true.
  config_output_reference_time = '${OCN_DATE}'
  config_restart_timestamp_name = 'rpointer.ocn'
- config_start_time = '${START_DATE}_${START_HOUR}'
 EOF
 
 }
@@ -484,6 +482,31 @@ case_setup() {
 }
 
 #-----------------------------------------------------
+# E3SM's MPAS build compiles the drivers from the E3SM source tree and ignores
+# Fortran SourceMods, so copy the fixed drivers listed in MPAS_DRIVERS there.
+# A file is replaced only if it is the exact original the fix was made from
+# (git blob id), so a different E3SM version stops the build instead.
+install_mpas_driver_fixes() {
+    local manifest="${E3SM_SOURCEMODS_DIR}/MPAS_DRIVERS" comp src dst base
+    [[ -r "${manifest}" ]] || { echo "ERROR: missing ${manifest}" >&2; exit 36; }
+    for comp in "$@"; do
+        read -r src dst base < <(grep "^${comp}/" "${manifest}") || { echo "ERROR: no ${comp} entry in ${manifest}" >&2; exit 36; }
+        src="${E3SM_SOURCEMODS_DIR}/${src}"
+        dst="${CODE_ROOT}/${dst}"
+        if cmp -s "${src}" "${dst}"; then
+            echo "MPAS driver fix already in place: ${dst}"
+        elif [[ "$(git hash-object "${dst}")" == "${base}" ]]; then
+            cp -p -- "${src}" "${dst}"
+            echo "Installed MPAS driver fix: ${src} -> ${dst}"
+        else
+            echo "ERROR: ${dst} is not the E3SM version the fix in ${src} was made from;" >&2
+            echo "       port the fix to this E3SM version (see ${E3SM_SOURCEMODS_DIR}/README.txt)" >&2
+            exit 37
+        fi
+    done
+}
+
+#-----------------------------------------------------
 case_build() {
 
     pushd ${CASE_SCRIPTS_DIR}
@@ -533,6 +556,9 @@ case_build() {
             echo $'\nCompiling on compute node: GMAKE_J=64\n'
             ./xmlchange GMAKE_J=64
         fi
+
+        # MPAS drivers that take the hybrid start time from the coupler clock
+        install_mpas_driver_fixes src.mpassi src.mpaso
 
         # Run CIME case.build
         ./case.build

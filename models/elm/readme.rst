@@ -40,9 +40,10 @@ has some features that need to be described in some detail.
 SourceMods
 ~~~~~~~~~~
 
-The version-matched ELM overrides are in
-``DART_SourceMods/e3sm_maint_3.0/src.elm``. They were verified against E3SM
-revision ``1eda4d4dcacd9ff603764264d5bf8ca861b97ac1``. CIME requires the
+The version-matched ELM overrides are kept with the other E3SM source overrides
+in ``models/e3sm_sourcemods/e3sm_maint_3.0/src.elm`` at the repository root.
+They match the E3SM submodule revision ``v3.0.2-97-gbc1af56a9b`` apart from the
+changes below. CIME requires the
 Fortran files directly under ``SourceMods/src.elm``; do not reproduce the ELM
 source-tree subdirectories.
 
@@ -225,7 +226,7 @@ points are:
 +------------------------------------+-----------------------------------------------------------+
 
 Step 1 installs the version-matched ELM files from
-``DART_SourceMods/e3sm_maint_3.0/src.elm`` before ``case.setup`` and
+``models/e3sm_sourcemods/e3sm_maint_3.0/src.elm`` before ``case.setup`` and
 compilation. Review all paths in ``create_and_setup_case.sh`` and all Slurm
 ``#SBATCH`` directives before submitting the numbered scripts.
 

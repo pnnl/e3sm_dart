@@ -102,11 +102,11 @@ if (
   [[ "${actual_e3sm_sha}" == "${E3SM_SHA}" ]] || \
     error "E3SM is ${actual_e3sm_sha}; profile ${PROFILE_NAME} requires ${E3SM_SHA}"
 
-  [[ -z "$(
-    cd "${repository_root}/E3SM" || exit 1
-    git status --porcelain
-  )" ]] || \
+  [[ -z "$(e3sm_unexpected_changes "${repository_root}")" ]] || \
     error "E3SM contains local changes"
+  while IFS= read -r fixed_driver; do
+    printf 'NOTE: E3SM has the workflow MPAS driver fix installed: %s\n' "${fixed_driver}"
+  done < <(e3sm_installed_driver_fixes "${repository_root}")
 
 else
   error "E3SM submodule is not initialized"

@@ -75,6 +75,8 @@ export my_cycle_shutdown_margin_sec=600
 # my_runtype must be Full-CPL or AMIP; keep compset and reference files consistent.
 ################################################################################
 export my_e3sm_code="${my_repository_root}/E3SM"
+# E3SM source overrides (SourceMods) for DA cases; see the README there
+export my_e3sm_sourcemods_dir="${my_repository_root}/models/e3sm_sourcemods/e3sm_maint_3.0"
 export my_runtype="Full-CPL"
 export my_compset="WCYCL20TR"
 export my_resolution="ne30pg2_r05_IcoswISC30E3r5"
@@ -171,7 +173,7 @@ export my_elm_dart_end_date="${my_e3sm_end_date}"
 export my_elm_dart_end_tod="${my_e3sm_end_tod}"
 export my_elm_dart_run_dir="${my_dart_root}/elm"
 export my_elm_dart_code="${my_repository_root}"
-export my_elm_sourcemods_dir="${my_elm_dart_code}/models/elm/DART_SourceMods/e3sm_maint_3.0/src.elm"
+export my_elm_sourcemods_dir="${my_e3sm_sourcemods_dir}/src.elm"
 export my_elm_dart_obsdir="/global/cfs/cdirs/m4849/zhan391/reference/LAND_SURFACE_OBS"
 export my_elm_dart_model="elm"
 export my_elm_history_stream="h1"

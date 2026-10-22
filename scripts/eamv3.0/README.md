@@ -17,7 +17,10 @@ and are carried forward by the coupled forecast, but no ELM data assimilation
 is involved:
 
 - No ELM DART analysis, ELM DART namelist, or ELM perturbation.
-- No ELM DART SourceMods are installed in the cases.
+- No ELM DART SourceMods are installed in the cases. The only E3SM source
+  changes are the MPAS driver fixes in `models/e3sm_sourcemods/e3sm_maint_3.0`
+  (`my_e3sm_sourcemods_dir`), which start MPAS-Seaice at the cycle time; the
+  build step copies them into the `E3SM` checkout.
 - ELM writes only its monthly-mean `h0` history; the 6-hourly instantaneous
   `h1`/`h2` streams that ELM-DART reads are not configured.
 - It uses upstream NCAR DART (`baseline` version profile) and only the EAM-SE

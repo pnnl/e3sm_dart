@@ -47,10 +47,14 @@ the `#SBATCH` directives together.
 
 ## ELM integration (not yet tested)
 
-Step 1 installs the flattened Fortran files from
-`../../DART_SourceMods/e3sm_maint_3.0/src.elm` into every generated E3SM case
-before `case.setup` and compilation. CIME requires these files directly under
-`SourceMods/src.elm`; component source subdirectories must not be reproduced.
+Step 1 installs the E3SM source overrides from
+[`../../models/e3sm_sourcemods/e3sm_maint_3.0`](../../models/e3sm_sourcemods/e3sm_maint_3.0/README.txt)
+(`my_e3sm_sourcemods_dir`) before compilation. The ELM-DART files in `src.elm`
+(`my_elm_sourcemods_dir`) go into every case's `SourceMods/src.elm`; CIME
+requires them directly there, without ELM source subdirectories. The MPAS
+driver fixes in `src.mpassi` and, for WCYCL20TR, `src.mpaso` start MPAS at the
+time of each hybrid DA cycle. E3SM's MPAS build ignores Fortran SourceMods, so
+the build step copies them into the `E3SM` checkout instead.
 
 The default configuration enables EAM analyses only; ELM analyses stay off
 until SMAP observation files are staged and the ELM-DART path is tested.

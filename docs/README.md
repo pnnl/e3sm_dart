@@ -168,27 +168,40 @@ test -x model_mod_check
 `model_mod_check` requires a valid `input.nml` and any model data referenced by
 that namelist.
 
-## ELM SourceMods
+## E3SM SourceMods
 
-ELM assimilation with E3SM maint-3.0 requires the compatible source overrides
-under:
+All E3SM source overrides used by the DA workflows are kept together, per E3SM
+version, under:
 
 ```text
-models/elm/DART_SourceMods/e3sm_maint_3.0/src.elm/
+models/e3sm_sourcemods/e3sm_maint_3.0/
+├── src.elm/      # ELM-DART: balance checks after an update, PARVEG output
+├── src.mpassi/   # MPAS-Seaice: hybrid start time from the coupler clock
+└── src.mpaso/    # MPAS-Ocean: hybrid start time from the coupler clock
 ```
 
-The files must be copied directly into the E3SM case directory before the case
-is built:
+These files are compiled into E3SM, not DART, and the workflow run templates
+install them when the case is built:
 
-```bash
-cp -p models/elm/DART_SourceMods/e3sm_maint_3.0/src.elm/*.F90 \
-  <case-root>/SourceMods/src.elm/
-```
+- `src.elm` goes into `<case-root>/SourceMods/src.elm/` (coupled ELM-DART
+  workflows only). CIME requires the files directly there, without ELM source
+  subdirectories.
+- `src.mpassi` and `src.mpaso` (every workflow) are copied into the `E3SM`
+  checkout just before `case.build`, because E3SM's MPAS build compiles its
+  drivers from the source tree and ignores Fortran SourceMods. `MPAS_DRIVERS`
+  lists each file with the git blob id of the E3SM original it was made from;
+  the build stops if the checkout holds a different version. Afterwards
+  `git -C E3SM status` shows the drivers as modified.
+  `tools/validate-repository` and `tools/checkout-version` accept exactly
+  these changes and still report any other local E3SM change;
+  `checkout-version` restores the original drivers before moving E3SM to a
+  different commit. To restore them by hand:
+  `git -C E3SM checkout -- components/mpas-seaice/driver/ice_comp_mct.F components/mpas-ocean/driver/ocn_comp_mct.F`.
 
-Do not reproduce ELM source subdirectories beneath `SourceMods/src.elm/`.
-Compatibility information and the purpose of each modification are documented
-in `models/elm/DART_SourceMods/e3sm_maint_3.0/README.txt`. The maintained
-coupled workflow installs these files automatically during case creation.
+The E3SM revision these files match and the
+purpose of each modification are documented in
+`models/e3sm_sourcemods/e3sm_maint_3.0/README.txt`; recheck them whenever the
+`E3SM` submodule is moved.
 
 ## Select an experiment workflow
 
@@ -239,7 +252,6 @@ models/<model-name>/
 ├── model_mod.f90
 ├── model_mod.nml
 ├── additional interface sources
-├── DART_SourceMods/       # only when the E3SM component needs overrides
 ├── nml_template/          # maintained runtime namelist templates, if needed
 └── work/
     ├── input.nml
@@ -249,7 +261,9 @@ models/<model-name>/
 When adding a source file, also update the appropriate `quickbuild.sh` or
 preprocess configuration so the file is actually compiled. Avoid modifying
 `DART/models/` for an E3SM-specific interface; changes there belong to the
-upstream NCAR/DART development process.
+upstream NCAR/DART development process. If the interface also needs E3SM source
+changes, add them to `models/e3sm_sourcemods/<e3sm-version>/src.<component>/`
+(see [E3SM SourceMods](#e3sm-sourcemods)) and document them in that README.
 
 Before committing an interface change:
 

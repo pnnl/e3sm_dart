@@ -22,5 +22,14 @@ and DART output).
 
 Run scripts only with the configuration and `workflow_lib/` files from the same
 workflow directory. The coupled `e3smv3.0_wcp` and `e3smv3.0_scp` workflows additionally require a
-compatible ELM-DART build and the ELM SourceMods directory configured by
-`my_elm_sourcemods_dir`.
+compatible ELM-DART build and the ELM SourceMods in `src.elm` (`my_elm_sourcemods_dir`).
+
+All E3SM source overrides (SourceMods) used by these workflows are kept in
+[`../models/e3sm_sourcemods/e3sm_maint_3.0/`](../models/e3sm_sourcemods/e3sm_maint_3.0/README.txt)
+(`my_e3sm_sourcemods_dir`) and are installed when the case is built. Every
+workflow installs the MPAS driver fixes, so that MPAS-Seaice and MPAS-Ocean
+start each hybrid DA cycle at the cycle time; without them, cycles that start
+at 06, 12 or 18Z fail. E3SM's MPAS build ignores Fortran SourceMods, so these
+two files are copied into the `E3SM` checkout itself just before the build,
+which then shows them as local changes. Only the coupled workflows install the
+ELM-DART files, as case SourceMods.
