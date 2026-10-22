@@ -2,6 +2,21 @@
 # This file is sourced; it should define settings without running workflow work.
 
 ################################################################################
+# --- Locale ------------------------------------------------------------------
+# Jobs inherit the submitting shell's locale. If this machine does not have it
+# (for example LANG=C.UTF-8 from VS Code on RHEL 7), the Intel compilers stop
+# with "could not set locale", so fall back to the first locale it does have.
+if command -v locale >/dev/null 2>&1 && [[ -n "$(locale 2>&1 >/dev/null)" ]]; then
+  for _my_locale in C.UTF-8 en_US.UTF-8 C; do
+    if [[ -z "$(LC_ALL="${_my_locale}" locale 2>&1 >/dev/null)" ]]; then
+      export LC_ALL="${_my_locale}"
+      break
+    fi
+  done
+  unset _my_locale
+fi
+
+################################################################################
 # --- Workflow and runtime paths ---------------------------------------------
 # The workflow root is resolved from this configuration file at source time.
 _my_config_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
