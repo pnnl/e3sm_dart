@@ -100,7 +100,10 @@ elm_configure_namelist() {
 }
 
 elm_find_observation() {
-  local stamp="$1" yyyymm="${stamp:0:4}${stamp:5:2}" candidate
+  # Separate local statements: bash expands every word of one `local` before
+  # assigning any of them, so ${stamp} would still be unset here.
+  local stamp="$1"
+  local yyyymm="${stamp:0:4}${stamp:5:2}" candidate
   for candidate in \
     "${my_elm_dart_obsdir}/${yyyymm}_6H/obs_seq.${stamp}" \
     "${my_elm_dart_obsdir}/${yyyymm}/obs_seq.${stamp}" \
@@ -122,6 +125,33 @@ elm_target_iso_time() {
     "${hour}" "${minute}" "${second}"
 }
 
+# Times of the records in an ELM history file as YYYY-MM-DDTHH:MM:SS, one per
+# line, from its integer mcdate/mcsec variables. Uses ncdump: cdo is not in the
+# DART job environment, which the machine env file starts with `module purge`.
+elm_history_timestamps() {
+  local values
+  values=$(ncdump -v mcdate,mcsec "$1" 2>/dev/null) || return 1
+  awk '
+    /^data:/ { data = 1; next }
+    !data { next }
+    /mcdate *=/ { mode = "date" }
+    /mcsec *=/ { mode = "sec" }
+    {
+      gsub(/mcdate|mcsec|[=;}]/, " ")
+      n = split($0, v, /[ ,]+/)
+      for (i = 1; i <= n; i++) if (v[i] ~ /^[0-9]+$/) {
+        if (mode == "date") date[++nd] = v[i]; else if (mode == "sec") sec[++ns] = v[i]
+      }
+    }
+    END {
+      if (nd == 0 || nd != ns) exit 1
+      for (i = 1; i <= nd; i++) {
+        s = sec[i] + 0
+        printf "%04d-%02d-%02dT%02d:%02d:%02d\n", int(date[i] / 10000), int(date[i] / 100) % 100, date[i] % 100, int(s / 3600), int(s % 3600 / 60), s % 60
+      }
+    }' <<< "${values}"
+}
+
 elm_find_history_record() {
   local enstr="$1" stream="$2" target="$3" candidate timestamp index member_archive
   local -a candidates=()
@@ -139,7 +169,7 @@ elm_find_history_record() {
         return 0
       fi
       index=$((index + 1))
-    done < <(cdo -s showtimestamp "${candidate}" 2>/dev/null | awk '{for (i=1; i<=NF; i++) if ($i ~ /^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]$/) print $i}')
+    done < <(elm_history_timestamps "${candidate}")
   done
   elm_fail "no ${stream} history record for ${enstr} at ${target}"
 }
@@ -148,7 +178,7 @@ elm_link_single_history_record() {
   local record="$1" output="$2" expected="$3" source index timestamps count
   source=${record%|*}
   index=${record##*|}
-  timestamps=$(cdo -s showtimestamp "${source}" 2>/dev/null | awk '{for (i=1; i<=NF; i++) if ($i ~ /^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]$/) print $i}') || return 1
+  timestamps=$(elm_history_timestamps "${source}") || return 1
   count=$(awk 'NF {n++} END {print n+0}' <<< "${timestamps}")
   [[ "${index}" == "0" && "${count}" == "1" && "${timestamps}" == "${expected}" ]] || {
     elm_fail "linked history source must contain exactly one matching record: ${source}"
@@ -176,6 +206,7 @@ elm_validate_vector_record() {
 
 elm_preflight() {
   local name executable i enstr restart history_record vector_record target_iso
+  command -v ncdump >/dev/null 2>&1 || elm_fail "ncdump is not on PATH in the DART job environment (my_dart_env_file)" || return 1
   for name in my_ensnum my_elm_dart_nnodes my_task_per_node; do
     elm_positive_int "${name}" "${!name:-}" || return 1
   done
