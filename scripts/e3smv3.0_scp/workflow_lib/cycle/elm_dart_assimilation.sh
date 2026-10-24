@@ -363,6 +363,14 @@ if [[ "${ELM_APPLY_LND_PROFILE}" != "TRUE" ]] || (( lnd_da_inf_flavor_prior != 0
   else
     ./fill_inflation_restart > fill_inflation_restart.log 2>&1 || elm_fail "could not initialize inflation" || return 1
   fi
+  # Seed the output inflation files with the input ones. filter writes into an
+  # existing output file and skips NO_COPY_BACK variables, so those keep their
+  # values; otherwise they are missing from the next cycle's input (CLM-DART
+  # documentation, "Inflation").
+  for source in input_priorinf_*.nc input_postinf_*.nc; do
+    [[ -e "${source}" ]] || continue
+    cp -p "${source}" "${source/input_/output_}" || return 1
+  done
   rm -f elm_restart.nc elm_history.nc elm_vector_history.nc
 fi
 
