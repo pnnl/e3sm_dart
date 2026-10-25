@@ -12,6 +12,7 @@ E3SM_DART/
 ├── E3SM/                  # Pinned E3SM maint-3.0 Git submodule
 ├── models/                # E3SM-specific model interfaces and supporting data
 │   ├── eam-se/            # EAM-SE DART interface, namelists, and build directory
+│   ├── eamxx/             # EAMxx DART interface (in development, from eam-se)
 │   ├── elm/               # ELM DART interface, SourceMods, and build directory
 │   ├── eam-common-code/   # Code shared by EAM-related interfaces
 │   ├── homme/             # HOMME grids, maps, and helper scripts
@@ -212,6 +213,7 @@ The maintained workflows are documented in [`scripts/README.md`](../scripts/READ
 | [`scripts/e3smv3.0_wcp/`](../scripts/e3smv3.0_wcp/README.md) | Weakly coupled EAM and ELM assimilation with E3SM maint-3.0 |
 | [`scripts/e3smv3.0_scp/`](../scripts/e3smv3.0_scp/README.md) | Strongly coupled EAM and ELM assimilation; requires the `scp-dart` profile |
 | [`scripts/eamv3.0/`](../scripts/eamv3.0/README.md) | EAM-SE-only assimilation with E3SM maint-3.0 |
+| [`scripts/eamxx/`](../scripts/eamxx/README.md) | EAMxx-only assimilation (in development, from `scripts/eamv3.0/`) |
 | `scripts/eamv2.0/` | Legacy EAM/E3SM v2 workflow retained for reference |
 
 For either maintained workflow, first review every setting in its

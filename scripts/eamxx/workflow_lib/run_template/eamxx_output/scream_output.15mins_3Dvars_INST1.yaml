@@ -1,0 +1,24 @@
+averaging_type: Instant
+fields:
+  physics_pg2:
+    field_names:
+    - T_mid
+    - geopotential_mid
+    - U
+    - V
+    - omega
+    - pseudo_density
+    - qv
+    - diag_equiv_reflectivity
+    - cldfrac_liq
+    - cldfrac_tot
+    - cldfrac_tot_for_analysis
+    - ps
+max_snapshots_per_file: 3000
+restart:
+  force_new_file: true
+filename_prefix: F2010-SCREAMv1.GoAmazonx32v1pg2.000.3D.INST1
+output_control:
+  frequency: 15
+  mpi_ranks_in_filename: false
+  frequency_units: nmins

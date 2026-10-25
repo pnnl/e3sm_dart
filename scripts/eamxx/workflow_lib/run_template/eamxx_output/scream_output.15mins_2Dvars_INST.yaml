@@ -1,0 +1,22 @@
+averaging_type: Instant
+fields:
+  physics_pg2:
+    field_names:
+    - SeaLevelPressure
+    - wind_speed_10m
+    - T_2m
+    - qv_2m
+    - ps
+    - IceWaterPath
+    - LiqWaterPath
+    - VapWaterPath
+    - omega_at_500hPa
+    - surf_radiative_T
+max_snapshots_per_file: 3000
+restart:
+  force_new_file: true
+filename_prefix: F2010-SCREAMv1.GoAmazonx32v1pg2.000.2D.INST
+output_control:
+  frequency: 15
+  mpi_ranks_in_filename: false
+  frequency_units: nmins

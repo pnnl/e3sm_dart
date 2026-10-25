@@ -1,0 +1,22 @@
+averaging_type: average
+fields:
+  physics_pg2:
+    field_names:
+    - precip_total_surf_mass_flux
+    - surf_sens_flux
+    - surface_upward_latent_heat_flux
+    - SW_flux_dn_at_model_bot
+    - SW_flux_up_at_model_bot
+    - LW_flux_dn_at_model_bot
+    - LW_flux_up_at_model_bot
+    - SW_flux_up_at_model_top
+    - LW_flux_up_at_model_top
+    - SW_flux_dn_at_model_top
+max_snapshots_per_file: 3000
+restart:
+  force_new_file: true
+filename_prefix: F2010-SCREAMv1.GoAmazonx32v1pg2.000.2D.AVE
+output_control:
+  frequency: 15
+  mpi_ranks_in_filename: false
+  frequency_units: nmins

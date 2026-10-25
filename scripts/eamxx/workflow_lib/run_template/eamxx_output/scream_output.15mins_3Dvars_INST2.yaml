@@ -1,0 +1,22 @@
+averaging_type: Instant
+fields:
+  physics_pg2:
+    field_names:
+    - qi
+    - qc
+    - qr
+    - qm
+    - bm
+    - nc
+    - nr
+    - ni
+    - p_mid
+    - ps
+max_snapshots_per_file: 3000
+restart:
+  force_new_file: true
+filename_prefix: F2010-SCREAMv1.GoAmazonx32v1pg2.000.3D.INST2
+output_control:
+  frequency: 15
+  mpi_ranks_in_filename: false
+  frequency_units: nmins

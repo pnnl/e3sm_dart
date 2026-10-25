@@ -26,6 +26,7 @@ E3SM_DART/
 │   │   └── work/
 │   │       ├── input.nml
 │   │       └── quickbuild.sh
+│   ├── eamxx/               EAMxx interface (in development, from eam-se)
 │   └── elm/                 ELM interface and conversion utilities
 │       └── work/
 │           ├── input.nml
