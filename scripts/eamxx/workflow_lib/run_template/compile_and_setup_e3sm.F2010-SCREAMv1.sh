@@ -241,9 +241,15 @@ eamxx_options() {
     # use CO2 the same in land model
     ./xmlchange CCSM_CO2_PPMV=410.5
 
-    # Output streams: each member writes files named after its own case
-    local yaml stream
-    for yaml in "${output_yaml_dir}"/scream_output.*.yaml; do
+    # Output streams: each member writes files named after its own case.
+    # This script runs with bash -f (no globbing), so list the files with find.
+    local yaml stream yamls
+    yamls=$(find "${output_yaml_dir}" -maxdepth 1 -name 'scream_output.*.yaml' | sort)
+    if [ -z "${yamls}" ]; then
+        echo "ERROR: no scream_output.*.yaml files in ${output_yaml_dir}"
+        exit 381
+    fi
+    for yaml in ${yamls}; do
         stream=$(basename "${yaml}" .yaml)
         stream=${stream#scream_output.}
         sed "s#^filename_prefix:.*#filename_prefix: ${CASE_NAME}.${stream}#" "${yaml}" > "./$(basename "${yaml}")"
