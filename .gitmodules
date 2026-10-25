@@ -6,3 +6,7 @@
 	path = E3SM
 	url = https://github.com/E3SM-Project/E3SM.git
 	branch = maint-3.0
+[submodule "E3SM_RRM"]
+	path = E3SM_RRM
+	url = https://github.com/hyma68/E3SM.git
+	branch = hyma/THREAD_RRM
